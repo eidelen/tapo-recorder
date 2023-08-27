@@ -1,12 +1,11 @@
 # resources: https://github.com/xelest/tapo_c200_python_opencv
 
 import argparse
-import numpy as np
 from datetime import datetime
 import collections
-from itertools import product
-
 import cv2    # pip install opencv-python
+
+import img_proc as ip
 
 parser = argparse.ArgumentParser(description='Record images when motion')
 parser.add_argument('user')
@@ -63,13 +62,10 @@ while True:
     else:
         # check if there is motion
         if prev_frame is not None:
-            diff_img = cv2.subtract(frame_gs, prev_frame)
-            err = np.sum(diff_img ** 2)
-            mse = err / (float(h * w))
-
+            mse = ip.mean_square_error(frame_gs, prev_frame)
 
             # record a movie if there is motion
-            if mse > 5.0:
+            if mse > 60.0:
                 is_recording = True
                 k_recording = 0
 
