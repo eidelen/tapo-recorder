@@ -18,9 +18,11 @@ user = args.user # user you set in Advanced Settings -> Camera Account
 password = args.password # password you set in Advanced Settings -> Camera Account
 host = args.ip # ip of the camera, example: 192.168.1.52
 port = 554
+length_recording = 80 # frames
+length_prev_recording_buffer = 20 # frames
 
-url_1080p = f"rtsp://{user}:{password}@{host}:{port}/stream2"
 
+url_1080p = f"rtsp://{user}:{password}@{host}:{port}/stream2" # stream1 -> higher resolution
 print(url_1080p)
 
 cap = cv2.VideoCapture(url_1080p)
@@ -31,10 +33,10 @@ if not cap.isOpened():
 
 prev_frame = None
 is_recording = False
-length_recording = 80
+
 k_recording = 0
 video_writer = None
-frame_ring_buffer = collections.deque(maxlen=20)
+frame_ring_buffer = collections.deque(maxlen=length_prev_recording_buffer)
 
 while True:
     # Read a frame from the RTSP stream and convert to grayscale
@@ -65,7 +67,7 @@ while True:
             mse = ip.mean_square_error(frame_gs, prev_frame)
 
             # record a movie if there is motion
-            if mse > 60.0:
+            if mse > 80.0:
                 is_recording = True
                 k_recording = 0
 
@@ -76,7 +78,7 @@ while True:
                 while frame_ring_buffer:
                     video_writer.write(frame_ring_buffer.popleft())
 
-                print("Start recording: ", mse)
+                print("Start recording: MSE=", mse)
 
         prev_frame = frame_gs
 
