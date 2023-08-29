@@ -11,6 +11,7 @@ parser = argparse.ArgumentParser(description='Record images from tapo camera whe
 parser.add_argument('user', help='Username of the tapo camera')
 parser.add_argument('password', help='Password of the tapo camera')
 parser.add_argument('ip', help='IP address of the tapo camera')
+parser.add_argument('path', help='Path where to store the video clips')
 parser.add_argument('threshold', help='MSE threshold for recording a video sequence', type=float)
 args = parser.parse_args()
 
@@ -69,7 +70,7 @@ while True:
                 k_recording = 0
 
                 # create new recording and add the whole frame buffer
-                recording_file_name = f"recs/{datetime.now():%Y-%m-%d_%H-%M-%S}-MSE={mse}.avi"
+                recording_file_name = f"{args.path}/{datetime.now():%Y-%m-%d_%H-%M-%S}-MSE={mse}.avi"
                 video_writer = cv2.VideoWriter(recording_file_name, cv2.VideoWriter_fourcc(*'MJPG'), 10, (w, h),
                                                isColor=False)
 
